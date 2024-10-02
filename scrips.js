@@ -1,6 +1,10 @@
 let flags = [];
 let names = [];
+let showncountries = [];
 let correctCountry = "";
+
+let correct = 0;
+document.getElementById("score").innerHTML = `Score: ${correct}`;
 
 fetch('https://restcountries.com/v3.1/all')
     .then(res => res.json())
@@ -12,12 +16,20 @@ fetch('https://restcountries.com/v3.1/all')
     .catch(error => console.error(error));
 
 function generateFlag() {
-    const nameIndex = Math.floor(Math.random() * flags.length);
+    let nameIndex;
+
+    do {
+        nameIndex = Math.floor(Math.random() * flags.length);
+    } while (showncountries.includes(nameIndex));
+
+
     correctCountry = names[nameIndex];
     const flag = flags[nameIndex];
 
     document.getElementById('flag').src = `https://flagcdn.com/h120/${flag}.png`;
     document.getElementById('flag').style = 'block';
+
+    showncountries.push(nameIndex);
 
     setButton(nameIndex);
 }
@@ -29,6 +41,7 @@ function setButton(correctIndex) {
         const randomIndex = Math.floor(Math.random() * names.length);
         if (!options.includes(randomIndex)) {
             options.push(randomIndex);
+            showncountries.push(randomIndex);
         }
     }
 
@@ -43,9 +56,15 @@ function setButton(correctIndex) {
 
 function checkAnswer(selectedCountry) {
     if (selectedCountry === correctCountry) {
-
+        correct++;
+        document.getElementById("score").innerHTML = `Score: ${correct}`;
         generateFlag();
+
     } else {
+        correct = 0;
+        document.getElementById("score").innerHTML = `Score: ${correct}`;
         alert("Wrong! Try again.");
+        generateFlag();
+
     }
 }
